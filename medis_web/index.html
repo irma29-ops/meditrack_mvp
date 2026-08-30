@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Medis - Tu historia médica, organizada por ti">
+  <title>Medis | Tu historia médica</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- AUTH -->
+  <section id="authScreen" class="auth-screen">
+    <div class="auth-orb orb-a"></div>
+    <div class="auth-orb orb-b"></div>
+
+    <div class="auth-layout">
+      <div class="auth-story">
+        <div class="brand brand-large">
+          <div class="brand-mark">M</div>
+          <div>
+            <strong>Medis</strong>
+            <span>Tu historia médica, organizada por ti</span>
+          </div>
+        </div>
+
+        <div class="auth-copy">
+          <span class="eyebrow">SALUD PERSONAL · HISTORIAL · CONTROL</span>
+          <h1>Tu información médica lista cuando realmente la necesitas.</h1>
+          <p>
+            Medicamentos, citas, recetas, estudios, cambios de tratamiento y un resumen
+            para consulta en una sola plataforma.
+          </p>
+
+          <div class="feature-strip">
+            <div><b>01</b><span>Modo Consulta</span></div>
+            <div><b>02</b><span>Historial clínico</span></div>
+            <div><b>03</b><span>Expediente relacionado</span></div>
+            <div><b>04</b><span>Acceso temporal</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-tab="login">Iniciar sesión</button>
+          <button class="auth-tab" data-tab="register">Crear cuenta</button>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+          <div>
+            <span class="mini-label">BIENVENIDA</span>
+            <h2>Qué gusto verte</h2>
+            <p>Entra a tu espacio personal de salud.</p>
+          </div>
+
+          <label>Correo
+            <input id="loginEmail" type="email" placeholder="tu@correo.com" required>
+          </label>
+
+          <label>Contraseña
+            <input id="loginPassword" type="password" minlength="6" placeholder="••••••••" required>
+          </label>
+
+          <button class="btn btn-primary btn-block" type="submit">Entrar a Medis</button>
+          <button class="btn btn-soft btn-block" type="button" id="demoBtn">Probar con datos de demostración</button>
+          <small class="privacy-note">MVP educativo: la información se guarda localmente en este navegador.</small>
+        </form>
+
+        <form id="registerForm" class="auth-form hidden">
+          <div>
+            <span class="mini-label">NUEVA CUENTA</span>
+            <h2>Crea tu espacio</h2>
+            <p>Comienza tu historial personal.</p>
+          </div>
+
+          <label>Nombre
+            <input id="registerName" type="text" placeholder="Tu nombre" required>
+          </label>
+
+          <label>Correo
+            <input id="registerEmail" type="email" placeholder="tu@correo.com" required>
+          </label>
+
+          <label>Contraseña
+            <input id="registerPassword" type="password" minlength="6" placeholder="Mínimo 6 caracteres" required>
+          </label>
+
+          <button class="btn btn-primary btn-block" type="submit">Crear cuenta</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN APP -->
+  <div id="appShell" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark small">M</div>
+        <div>
+          <strong>Medis</strong>
+          <span>Mi historia médica</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-section="home"><span>⌂</span> Inicio</button>
+        <button class="nav-item" data-section="consult"><span>✦</span> Modo Consulta</button>
+        <button class="nav-item" data-section="medications"><span>✚</span> Medicamentos</button>
+        <button class="nav-item" data-section="calendar"><span>◫</span> Calendario</button>
+        <button class="nav-item" data-section="records"><span>▤</span> Expediente</button>
+        <button class="nav-item" data-section="history"><span>↺</span> Historial</button>
+        <button class="nav-item" data-section="share"><span>⌁</span> Compartir</button>
+        <button class="nav-item" data-section="emergency"><span>!</span> Emergencia</button>
+        <button class="nav-item" data-section="profile"><span>♡</span> Mi perfil</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-user">
+          <div class="avatar" id="sidebarAvatar">U</div>
+          <div>
+            <strong id="sidebarName">Usuario</strong>
+            <small id="sidebarEmail">correo</small>
+          </div>
+        </div>
+        <button id="logoutBtn" class="btn btn-soft btn-block">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button id="mobileMenu" class="mobile-menu">☰</button>
+        <div>
+          <p class="eyebrow" id="sectionEyebrow">MI SALUD</p>
+          <h1 id="sectionTitle">Inicio</h1>
+        </div>
+        <div class="topbar-date">
+          <span id="weekdayLabel">Hoy</span>
+          <strong id="dateLabel">--</strong>
+        </div>
+      </header>
+
+      <!-- HOME -->
+      <section id="section-home" class="page-section active">
+        <article class="hero-card">
+          <div>
+            <span class="mini-label">BUEN DÍA</span>
+            <h2>Hola, <span id="welcomeName">Usuario</span>. ¿Cómo estás?</h2>
+            <p id="homeQuestion">¿Ya tomaste tus medicamentos de hoy?</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary" data-go="medications">Registrar mis pastillas</button>
+              <button class="btn btn-soft" data-go="consult">Preparar mi consulta</button>
+            </div>
+          </div>
+          <div class="hero-art">
+            <div class="heart-line">♡</div>
+            <div class="capsule capsule-1"></div>
+            <div class="capsule capsule-2"></div>
+          </div>
+        </article>
+
+        <div class="kpi-grid">
+          <article class="kpi-card"><span>Medicamentos activos</span><strong id="kpiMeds">0</strong><small>Tratamientos actuales</small></article>
+          <article class="kpi-card"><span>Tomas de hoy</span><strong id="kpiToday">0/0</strong><small id="kpiTodayText">Sin tomas pendientes</small></article>
+          <article class="kpi-card"><span>Próxima cita</span><strong id="kpiNext">—</strong><small id="kpiNextText">Sin cita próxima</small></article>
+          <article class="kpi-card"><span>Documentos</span><strong id="kpiDocs">0</strong><small>En tu expediente</small></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="panel-kicker">HOY</span><h3>Medicamentos programados</h3></div>
+              <button class="link-btn" data-go="medications">Ver todos</button>
+            </div>
+            <div id="todayMedList" class="list-stack"></div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div><span class="panel-kicker">ADHERENCIA</span><h3>Últimos 7 días</h3></div>
+            </div>
+            <div class="chart-box"><canvas id="adherenceChart"></canvas></div>
+          </article>
+
+          <article class="panel panel-wide">
+            <div class="panel-head">
+              <div><span class="panel-kicker">CAMBIOS</span><h3>¿Qué cambió desde mi última consulta?</h3></div>
+              <button class="link-btn" data-go="consult">Ver resumen</button>
+            </div>
+            <div id="changeSummary" class="change-grid"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- CONSULT MODE -->
+      <section id="section-consult" class="page-section">
+        <div class="section-intro">
+          <div>
+            <span class="panel-kicker">FUNCIÓN PRINCIPAL</span>
+            <h2>Modo Consulta</h2>
+            <p>Un resumen compacto para entrar a consulta con la información más importante a la mano.</p>
+          </div>
+          <div class="action-row">
+            <button id="setLastConsultBtn" class="btn btn-soft">Marcar hoy como última consulta</button>
+            <button id="printConsultBtn" class="btn btn-primary">Imprimir / Guardar PDF</button>
+          </div>
+        </div>
+
+        <div id="consultSummary" class="consult-sheet"></div>
+      </section>
+
+      <!-- MEDICATIONS -->
+      <section id="section-medications" class="page-section">
+        <div class="section-intro">
+          <div>
+            <span class="panel-kicker">TRATAMIENTOS</span>
+            <h2>Medicamentos</h2>
+            <p>Registra tratamientos y conserva su historial de cambios.</p>
+          </div>
+          <button id="newMedicationBtn" class="btn btn-primary">+ Nuevo medicamento</button>
+        </div>
+        <div id="medicationCards" class="card-grid"></div>
+      </section>
+
+      <!-- CALENDAR -->
+      <section id="section-calendar" class="page-section">
+        <div class="section-intro">
+          <div>
+            <span class="panel-kicker">AGENDA</span>
+            <h2>Calendario de citas</h2>
+            <p>Consultas, estudios, laboratorios y seguimiento.</p>
+          </div>
+          <button id="newAppointmentBtn" class="btn btn-primary">+ Nueva cita</button>
+        </div>
+        <article class="panel"><div id="calendar"></div></article>
+      </section>
+
+      <!-- RECORDS -->
+      <section id="section-records" class="page-section">
+        <div class="section-intro">
+          <div>
+            <span class="panel-kicker">EXPEDIENTE DIGITAL</span>
+            <h2>Documentos médicos</h2>
+            <p>Guarda recetas, estudios y archivos relacionados con tus tratamientos y consultas.</p>
+          </div>
+          <button id="newRecordBtn" class="btn btn-primary">+ Subir documento</button>
+        </div>
+
+        <div class="toolbar">
+          <input id="recordSearch" type="search" placeholder="Buscar por nombre, categoría o nota...">
+          <select id="recordFilter">
+            <option value="all">Todas las categorías</option>
+            <option>Receta</option>
+            <option>Laboratorio</option>
+            <option>Estudio</option>
+            <option>Nota médica</option>
+            <option>Vacuna</option>
+            <option>Otro</option>
+          </select>
+        </div>
+
+        <div id="recordCards" class="record-grid"></div>
+      </section>
+
+      <!-- HISTORY -->
+      <section id="section-history" class="page-section">
+        <div class="section-intro">
+          <div>
+            <span class="panel-kicker">LÍNEA DE TIEMPO</span>
+            <h2>Historial médico</h2>
+            <p>Medicamentos, cambios, citas, documentos y accesos en una sola cronología.</p>
+          </div>
+          <div class="action-row">
+            <button id="exportCsvBtn" class="btn btn-soft">CSV</button>
+            <button id="exportExcelBtn" class="btn btn-soft">Excel</button>
+          </div>
+        </div>
+
+        <div class="history-layout">
+          <article class="panel">
+            <div class="toolbar slim">
+              <select id="historyFilter">
+                <option value="all">Todos los eventos</option>
+                <option value="medication">Medicamentos</option>
+                <option value="change">Cambios</option>
+                <option value="appointment">Citas</option>
+                <option value="record">Documentos</option>
+                <option value="share">Accesos</option>
+              </select>
+            </div>
+            <div id="timeline" class="timeline"></div>
+          </article>
+
+          <aside class="panel health-side">
+            <span class="panel-kicker">RESUMEN</span>
+            <h3>Mi información actual</h3>
+            <div id="healthSideSummary"></div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- SHARE -->
+      <section id="section-share" class="page-section">
+        <div class="section-intro">
+          <div>
+            <span class="panel-kicker">CONTROL DEL PACIENTE</span>
+            <h2>Compartir con mi médico</h2>
+            <p>Elige qué información deseas compartir y durante cuánto tiempo.</p>
+          </div>
+        </div>
+
+        <div class="share-layout">
+          <article class="panel">
+            <h3>Crear acceso temporal</h3>
+            <form id="shareForm" class="share-form">
+              <label class="check-row"><input id="shareMeds" type="checkbox" checked> Medicamentos actuales</label>
+              <label class="check-row"><input id="shareAllergies" type="checkbox" checked> Alergias y tipo sanguíneo</label>
+              <label class="check-row"><input id="shareRecords" type="checkbox" checked> Documentos recientes</label>
+              <label class="check-row"><input id="shareHistory" type="checkbox"> Historial completo</label>
+
+              <label>Duración
+                <select id="shareDuration">
+                  <option value="30">30 minutos</option>
+                  <option value="1440" selected>24 horas</option>
+                  <option value="10080">7 días</option>
+                </select>
+              </label>
+
+              <button class="btn btn-primary" type="submit">Generar acceso y QR</button>
+            </form>
+          </article>
+
+          <article class="panel qr-panel">
+            <span class="panel-kicker">ACCESO TEMPORAL</span>
+            <h3>QR de demostración</h3>
+            <div id="qrCode" class="qr-box"></div>
+            <p id="shareStatus" class="muted">Genera un acceso para mostrar el QR.</p>
+            <input id="shareLink" class="share-link" readonly placeholder="Aquí aparecerá el enlace">
+            <button id="copyShareBtn" class="btn btn-soft btn-block">Copiar enlace</button>
+            <small class="warning-note">En este MVP el enlace funciona solo en el mismo navegador/dispositivo porque no existe un servidor.</small>
+          </article>
+        </div>
+
+        <article class="panel">
+          <div class="panel-head"><div><span class="panel-kicker">AUDITORÍA</span><h3>Accesos registrados</h3></div></div>
+          <div id="auditList" class="audit-list"></div>
+        </article>
+      </section>
+
+      <!-- EMERGENCY -->
+      <section id="section-emergency" class="page-section">
+        <div class="section-intro">
+          <div>
+            <span class="panel-kicker">ACCESO RÁPIDO</span>
+            <h2>Modo Emergencia</h2>
+            <p>Una ficha mínima con la información que tú decidas mantener disponible.</p>
+          </div>
+          <button id="printEmergencyBtn" class="btn btn-primary">Imprimir tarjeta</button>
+        </div>
+        <div id="emergencyCard" class="emergency-card"></div>
+      </section>
+
+      <!-- PROFILE -->
+      <section id="section-profile" class="page-section">
+        <div class="section-intro">
+          <div>
+            <span class="panel-kicker">DATOS PERSONALES</span>
+            <h2>Mi perfil</h2>
+            <p>Información básica para tu expediente y tarjeta de emergencia.</p>
+          </div>
+        </div>
+
+        <div class="profile-layout">
+          <article class="panel profile-card">
+            <div id="profileAvatar" class="profile-avatar">U</div>
+            <h3 id="profileNameView">Usuario</h3>
+            <p id="profileEmailView" class="muted">correo</p>
+          </article>
+
+          <form id="profileForm" class="panel form-grid">
+            <label>Nombre completo<input id="profileName" type="text"></label>
+            <label>Fecha de nacimiento<input id="profileBirth" type="date"></label>
+            <label>Teléfono<input id="profilePhone" type="tel"></label>
+            <label>Tipo de sangre
+              <select id="profileBlood">
+                <option value="">Seleccionar</option>
+                <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                <option>AB+</option><option>AB-</option><option>O+</option><option>O-</option>
+              </select>
+            </label>
+            <label class="full">Alergias<textarea id="profileAllergies" rows="3"></textarea></label>
+            <label>Contacto de emergencia<input id="profileEmergencyName" type="text" placeholder="Nombre"></label>
+            <label>Teléfono de emergencia<input id="profileEmergencyPhone" type="tel"></label>
+            <label class="full">Notas importantes<textarea id="profileNotes" rows="3"></textarea></label>
+            <button class="btn btn-primary" type="submit">Guardar cambios</button>
+          </form>
+        </div>
+      </section>
+
+      <footer>Medis · MVP educativo de gestión personal de salud</footer>
+    </main>
+  </div>
+
+  <!-- SHARE VIEW -->
+  <section id="sharedView" class="shared-view hidden">
+    <div class="shared-shell">
+      <div class="brand brand-large">
+        <div class="brand-mark">M</div>
+        <div><strong>Medis</strong><span>Acceso temporal</span></div>
+      </div>
+      <div id="sharedContent" class="shared-content"></div>
+    </div>
+  </section>
+
+  <!-- MODALS -->
+  <div id="backdrop" class="backdrop hidden"></div>
+
+  <div id="medicationModal" class="modal hidden">
+    <div class="modal-head">
+      <div><span class="panel-kicker">TRATAMIENTO</span><h3 id="medModalTitle">Nuevo medicamento</h3></div>
+      <button class="modal-close" data-close="medicationModal">×</button>
+    </div>
+    <form id="medicationForm" class="form-grid">
+      <input id="medEditId" type="hidden">
+      <label>Medicamento<input id="medName" type="text" placeholder="Ej. Metformina" required></label>
+      <label>Dosis<input id="medDose" type="text" placeholder="Ej. 500 mg" required></label>
+      <label>Frecuencia
+        <select id="medFrequency">
+          <option>Cada 24 horas</option>
+          <option>Cada 12 horas</option>
+          <option>Cada 8 horas</option>
+          <option>Según indicación</option>
+        </select>
+      </label>
+      <label>Horarios<input id="medTimes" type="text" placeholder="08:00, 20:00" required><small>Separados por coma.</small></label>
+      <label>Fecha de inicio<input id="medStart" type="date" required></label>
+      <label>Médico que indicó<input id="medDoctor" type="text"></label>
+      <label>Motivo registrado<input id="medReason" type="text" placeholder="Ej. Control de presión"></label>
+      <label>Documento relacionado
+        <select id="medRecordLink"><option value="">Sin documento</option></select>
+      </label>
+      <label class="full">Indicaciones<textarea id="medInstructions" rows="3"></textarea></label>
+      <div class="modal-actions full">
+        <button type="button" class="btn btn-soft" data-close="medicationModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="changeModal" class="modal hidden">
+    <div class="modal-head">
+      <div><span class="panel-kicker">CAMBIO DE TRATAMIENTO</span><h3>Registrar modificación</h3></div>
+      <button class="modal-close" data-close="changeModal">×</button>
+    </div>
+    <form id="changeForm" class="form-grid">
+      <input id="changeMedId" type="hidden">
+      <label>Nueva dosis<input id="changeDose" type="text" required></label>
+      <label>Nueva frecuencia
+        <select id="changeFrequency">
+          <option>Cada 24 horas</option>
+          <option>Cada 12 horas</option>
+          <option>Cada 8 horas</option>
+          <option>Según indicación</option>
+        </select>
+      </label>
+      <label>Nuevos horarios<input id="changeTimes" type="text" required></label>
+      <label>Fecha del cambio<input id="changeDate" type="date" required></label>
+      <label>Médico<input id="changeDoctor" type="text"></label>
+      <label>Documento relacionado
+        <select id="changeRecordLink"><option value="">Sin documento</option></select>
+      </label>
+      <label class="full">Motivo / nota<textarea id="changeNote" rows="3" placeholder="Ej. Ajuste indicado en consulta"></textarea></label>
+      <div class="modal-actions full">
+        <button type="button" class="btn btn-soft" data-close="changeModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar cambio</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="appointmentModal" class="modal hidden">
+    <div class="modal-head">
+      <div><span class="panel-kicker">AGENDA</span><h3>Nueva cita</h3></div>
+      <button class="modal-close" data-close="appointmentModal">×</button>
+    </div>
+    <form id="appointmentForm" class="form-grid">
+      <label>Tipo
+        <select id="appointmentType">
+          <option>Consulta médica</option><option>Laboratorio</option><option>Estudio</option>
+          <option>Seguimiento</option><option>Vacunación</option><option>Otro</option>
+        </select>
+      </label>
+      <label>Especialidad<input id="appointmentSpecialty" type="text"></label>
+      <label>Fecha<input id="appointmentDate" type="date" required></label>
+      <label>Hora<input id="appointmentTime" type="time" required></label>
+      <label>Médico<input id="appointmentDoctor" type="text"></label>
+      <label>Lugar<input id="appointmentLocation" type="text"></label>
+      <label class="full">Notas<textarea id="appointmentNotes" rows="3"></textarea></label>
+      <div class="modal-actions full">
+        <button type="button" class="btn btn-soft" data-close="appointmentModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar cita</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="recordModal" class="modal hidden">
+    <div class="modal-head">
+      <div><span class="panel-kicker">EXPEDIENTE</span><h3>Subir documento</h3></div>
+      <button class="modal-close" data-close="recordModal">×</button>
+    </div>
+    <form id="recordForm" class="form-grid">
+      <label>Categoría
+        <select id="recordCategory">
+          <option>Receta</option><option>Laboratorio</option><option>Estudio</option>
+          <option>Nota médica</option><option>Vacuna</option><option>Otro</option>
+        </select>
+      </label>
+      <label>Fecha<input id="recordDate" type="date" required></label>
+      <label>Consulta relacionada
+        <select id="recordAppointmentLink"><option value="">Sin cita relacionada</option></select>
+      </label>
+      <label>Medicamento relacionado
+        <select id="recordMedicationLink"><option value="">Sin medicamento relacionado</option></select>
+      </label>
+
+      <label class="full upload-zone">
+        <span>⇧</span>
+        <strong>Selecciona imagen o PDF</strong>
+        <small>Para el MVP usa archivos pequeños (recomendado &lt; 5 MB).</small>
+        <input id="recordFile" type="file" accept="image/*,.pdf,application/pdf" required>
+      </label>
+
+      <div id="ocrPanel" class="full ocr-panel hidden">
+        <div class="panel-head">
+          <div><span class="panel-kicker">RECETA INTELIGENTE</span><h4>Texto detectado</h4></div>
+          <button id="runOcrBtn" type="button" class="btn btn-soft">Analizar imagen</button>
+        </div>
+        <textarea id="ocrText" rows="8" placeholder="Aquí aparecerá el texto detectado para que lo revises."></textarea>
+        <small>La lectura automática puede equivocarse. Confirma siempre la información antes de guardarla.</small>
+      </div>
+
+      <label class="full">Notas<textarea id="recordNotes" rows="3"></textarea></label>
+      <div class="modal-actions full">
+        <button type="button" class="btn btn-soft" data-close="recordModal">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar documento</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <script src="js/db.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
